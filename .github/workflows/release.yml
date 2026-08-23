@@ -1,0 +1,56 @@
+name: Release unscoped npm compatibility package
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the already validated artifact under next
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v6
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@v6
+        with: { node-version: "24", package-manager-cache: false }
+      - id: version
+        shell: bash
+        run: |
+          python3 scripts/sync-release-version.py
+          version=$(node -p 'require("./package.json").version')
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            test "$GITHUB_REF_NAME" = "v$version"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - run: npm test
+      - run: npm pack --pack-destination dist
+      - uses: actions/upload-artifact@v7
+        with: { name: npm-package, path: dist/*.tgz, if-no-files-found: error }
+
+  publish-next:
+    needs: package
+    if: github.event_name == 'push' || inputs.publish
+    runs-on: ubuntu-24.04
+    environment: npm-legacy-compatibility
+    permissions: { id-token: write }
+    steps:
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - uses: actions/download-artifact@v7
+        with: { name: npm-package, path: dist }
+      - name: Publish without moving legacy latest
+        run: npm publish --access public --provenance --tag next dist/*.tgz

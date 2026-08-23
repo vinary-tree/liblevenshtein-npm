@@ -1,0 +1,69 @@
+{
+  "name": "liblevenshtein",
+  "version": "4.0.0-rc.1",
+  "description": "Compatibility package for the Rust-backed @vinary-tree/liblevenshtein bindings",
+  "author": {
+    "name": "Dylon Edwards",
+    "email": "dylon.devo@gmail.com"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinary-tree/liblevenshtein-npm.git"
+  },
+  "engines": {
+    "node": ">=22.14"
+  },
+  "dependencies": {
+    "@vinary-tree/liblevenshtein": "4.0.0-rc.1"
+  },
+  "types": "./index.d.ts",
+  "main": "./index.cjs",
+  "module": "./index.mjs",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs",
+      "require": "./index.cjs"
+    },
+    "./typescript": {
+      "types": "./typescript.d.ts",
+      "import": "./typescript.mjs",
+      "require": "./typescript.cjs"
+    },
+    "./clojurescript": {
+      "types": "./clojurescript.d.ts",
+      "import": "./clojurescript.mjs",
+      "require": "./clojurescript.cjs"
+    },
+    "./wasm": {
+      "types": "./wasm.d.ts",
+      "import": "./wasm.mjs"
+    },
+    "./wasi": {
+      "types": "./wasi.d.ts",
+      "import": "./wasi.mjs"
+    }
+  },
+  "files": [
+    "*.cjs",
+    "*.mjs",
+    "*.d.ts",
+    "README.md",
+    "MIGRATION.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true,
+    "tag": "next"
+  },
+  "scripts": {
+    "sync:version": "python3 scripts/sync-release-version.py --write",
+    "check:version": "python3 scripts/sync-release-version.py",
+    "test": "npm run check:version && node --test test/package.test.mjs",
+    "prepack": "npm test"
+  }
+}
