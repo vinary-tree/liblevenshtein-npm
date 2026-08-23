@@ -42,7 +42,7 @@ jobs:
     needs: package
     if: github.event_name == 'push' || inputs.publish
     runs-on: ubuntu-24.04
-    environment: npm-legacy-compatibility
+    environment: npm
     permissions: { id-token: write }
     steps:
       - uses: actions/setup-node@v6
