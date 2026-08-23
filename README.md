@@ -36,3 +36,21 @@ Run `npm test` and inspect `npm pack --dry-run`. A release tag must equal
 `v4.0.0-rc.1`; publication uses npm trusted publishing and an explicit
 `--tag next`. Do not run `npm dist-tag add liblevenshtein@4.0.0-rc.1 latest`
 during the RC campaign.
+
+Tag creation validates and packs the compatibility facade, attaches the
+tarball and its SHA-256 manifest to a GitHub prerelease, and performs no npm
+mutation. After `@vinary-tree/liblevenshtein@4.0.0-rc.1` resolves and passes
+an installed-package smoke test, publish this final dependency-graph leaf with
+an exact-tag dispatch:
+
+```bash
+gh workflow run release.yml \
+  --repo vinary-tree/liblevenshtein-npm \
+  --ref v4.0.0-rc.1 \
+  -f registry=npm
+```
+
+Use `registry=validate-only` to rerun the artifact and GitHub-prerelease lane
+without authorizing npm. Branch dispatches fail closed. After publication,
+verify `next = 4.0.0-rc.1` and `latest = 2.0.4`; unlike the six new scoped
+packages, this legacy coordinate must not move `latest` during the RC.
