@@ -62,7 +62,7 @@ jobs:
       - uses: actions/download-artifact@v7
         with: { name: npm-package, path: dist }
       - name: Publish without moving legacy latest
-        run: npm publish --access public --provenance --tag next dist/*.tgz
+        run: npm publish --access public --provenance --tag next ./dist/*.tgz
 
   github-release:
     needs: package
