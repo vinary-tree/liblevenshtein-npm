@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "component": "liblevenshtein-npm-compatibility",
-  "canonical": "4.0.0-rc.2",
-  "npm": "4.0.0-rc.2",
+  "canonical": "4.0.0-rc.3",
+  "npm": "4.0.0-rc.3",
   "distTag": "next",
   "dependencies": {
-    "@vinary-tree/liblevenshtein": "4.0.0-rc.2"
+    "@vinary-tree/liblevenshtein": "4.0.0-rc.3"
   },
   "legacyLatest": {
     "version": "2.0.4",

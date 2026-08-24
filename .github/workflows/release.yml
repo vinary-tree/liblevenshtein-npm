@@ -1,8 +1,6 @@
 name: Release unscoped npm compatibility package
 
 on:
-  push:
-    tags: ["v*.*.*"]
   workflow_dispatch:
     inputs:
       registry:
@@ -67,9 +65,9 @@ jobs:
   github-release:
     needs: package
     if: >-
+      github.event_name == 'workflow_dispatch' &&
       github.ref_type == 'tag' &&
-      (github.event_name == 'push' ||
-       (github.event_name == 'workflow_dispatch' && inputs.registry == 'validate-only'))
+      inputs.registry == 'validate-only'
     runs-on: ubuntu-24.04
     permissions: { contents: write }
     steps:
