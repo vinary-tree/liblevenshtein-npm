@@ -5,11 +5,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MODEL_PATH = ROOT / "release/version.json"
+GENERATED_TREE_PARTS = frozenset(
+    {".git", ".venv", "_build", "build", "dist", "node_modules", "target", "venv"}
+)
 
 
 def load(path: Path) -> dict:
@@ -18,6 +22,19 @@ def load(path: Path) -> dict:
 
 def dump(path: Path, value: dict) -> None:
     path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
+
+
+def rewrite_candidate_tokens(patterns: tuple[str, ...], canonical: str) -> None:
+    base, candidate = canonical.split("-rc.", 1)
+    escaped = re.escape(base)
+    for pattern in patterns:
+        for target in ROOT.glob(pattern):
+            relative = target.relative_to(ROOT)
+            if not target.is_file() or GENERATED_TREE_PARTS.intersection(relative.parts):
+                continue
+            source = target.read_text(encoding="utf-8")
+            source = re.sub(rf"{escaped}-rc\.\d+", canonical, source)
+            target.write_text(source, encoding="utf-8")
 
 
 def write(model: dict) -> None:
@@ -35,6 +52,7 @@ def write(model: dict) -> None:
     root["version"] = model["npm"]
     root["dependencies"] = model["dependencies"]
     dump(lock_path, lock)
+    rewrite_candidate_tokens(("README.md", "MIGRATION.md", "test/*.mjs"), model["canonical"])
 
 
 def validate(model: dict) -> list[str]:

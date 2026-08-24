@@ -44,5 +44,5 @@ package contains no native binary, so switching the import spelling does not
 create a second runtime identity.
 
 During the RC, `liblevenshtein@latest` remains version `2.0.4`. Pin
-`liblevenshtein@4.0.0-rc.1` or use the `next` dist-tag when evaluating version
+`liblevenshtein@4.0.0-rc.2` or use the `next` dist-tag when evaluating version
 4.
