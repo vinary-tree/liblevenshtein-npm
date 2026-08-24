@@ -39,7 +39,11 @@ jobs:
           test "$GITHUB_REF_NAME" = "v$version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
       - run: npm test
-      - run: npm pack --pack-destination dist
+      - name: Pack the compatibility artifact
+        shell: bash
+        run: |
+          mkdir -p dist
+          npm pack --pack-destination dist
       - uses: actions/upload-artifact@v7
         with: { name: npm-package, path: dist/*.tgz, if-no-files-found: error }
 
