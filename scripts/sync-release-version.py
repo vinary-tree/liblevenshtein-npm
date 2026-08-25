@@ -30,7 +30,9 @@ def rewrite_candidate_tokens(patterns: tuple[str, ...], canonical: str) -> None:
     for pattern in patterns:
         for target in ROOT.glob(pattern):
             relative = target.relative_to(ROOT)
-            if not target.is_file() or GENERATED_TREE_PARTS.intersection(relative.parts):
+            if not target.is_file() or GENERATED_TREE_PARTS.intersection(
+                relative.parts
+            ):
                 continue
             source = target.read_text(encoding="utf-8")
             source = re.sub(rf"{escaped}-rc\.\d+", canonical, source)
@@ -52,7 +54,9 @@ def write(model: dict) -> None:
     root["version"] = model["npm"]
     root["dependencies"] = model["dependencies"]
     dump(lock_path, lock)
-    rewrite_candidate_tokens(("README.md", "MIGRATION.md", "test/*.mjs"), model["canonical"])
+    rewrite_candidate_tokens(
+        ("README.md", "MIGRATION.md", "test/*.mjs"), model["canonical"]
+    )
 
 
 def validate(model: dict) -> list[str]:
@@ -61,6 +65,8 @@ def validate(model: dict) -> list[str]:
     lock = load(ROOT / "package-lock.json")
     if model["canonical"] != model["npm"]:
         failures.append("canonical and npm versions differ")
+    if model.get("sourceTag") != f"v{model['canonical']}-release.1":
+        failures.append("corrective source tag must be the append-only release.1 ref")
     if package["version"] != model["npm"] or lock["version"] != model["npm"]:
         failures.append("package or lock version is stale")
     if package["dependencies"] != model["dependencies"]:
@@ -72,6 +78,14 @@ def validate(model: dict) -> list[str]:
         "mustRemainUnchangedDuringRc": True,
     }:
         failures.append("legacy latest protection policy changed")
+    release = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
+    for marker in (
+        "scripts/check-release-ref.py",
+        "environment: github-release",
+        "environment: npm",
+    ):
+        if marker not in release:
+            failures.append(f"release workflow is missing {marker}")
     return failures
 
 
@@ -87,7 +101,9 @@ def main() -> int:
         print(f"release-version error: {failure}", file=sys.stderr)
     if failures:
         return 1
-    print(f"release versions agree with {model['canonical']}; legacy latest remains protected")
+    print(
+        f"release versions agree with {model['canonical']}; legacy latest remains protected"
+    )
     return 0
 
 

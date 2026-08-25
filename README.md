@@ -33,9 +33,16 @@ the exact scoped package version recorded in `release/version.json`.
 ## Release safety
 
 Run `npm test` and inspect `npm pack --dry-run`. A release tag must equal
-`v4.0.0-rc.4`; publication uses npm trusted publishing and an explicit
+`v4.0.0-rc.4` or its positive numbered append-only corrective form;
+publication uses npm trusted publishing and an explicit
 `--tag next`. Do not run `npm dist-tag add liblevenshtein@4.0.0-rc.4 latest`
 during the RC campaign.
+
+The immutable canonical tag predates protected GitHub-release approval.
+Corrective source `v4.0.0-rc.4-release.1` changes only release authority and
+this runbook: `github-release` now requires an operator review and a `v*` tag
+policy, while npm remains behind its existing trusted-publisher environment.
+The package version remains `4.0.0-rc.4`; the canonical tag is not moved.
 
 Tag creation establishes only the immutable source ref. Dispatch
 `registry=validate-only` to pack the compatibility facade and attach the
@@ -47,7 +54,7 @@ exact-tag dispatch:
 ```bash
 gh workflow run release.yml \
   --repo vinary-tree/liblevenshtein-npm \
-  --ref v4.0.0-rc.4 \
+  --ref v4.0.0-rc.4-release.1 \
   -f registry=npm
 ```
 
