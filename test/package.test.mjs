@@ -8,7 +8,7 @@ const versionModel = JSON.parse(await readFile(new URL("../release/version.json"
 test("the unscoped RC delegates to one exact scoped facade", () => {
   assert.equal(packageJson.name, "liblevenshtein");
   assert.deepEqual(packageJson.dependencies, {
-    "@vinary-tree/liblevenshtein": "4.0.0-rc.3",
+    "@vinary-tree/liblevenshtein": "4.0.0-rc.4",
   });
   assert.equal(packageJson.publishConfig.tag, "next");
 });
