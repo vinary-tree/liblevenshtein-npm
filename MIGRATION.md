@@ -33,7 +33,7 @@ finalizers are leak containment, not the primary lifetime mechanism.
 | Version 2 concern | Version 4 replacement |
 |---|---|
 | Dictionary and matching API shipped together | Construct dictionaries with `@vinary-tree/libdictenstein`; pass their resource to `liblevenshtein` |
-| Package-selected JavaScript implementation | One exact `@vinary-tree/vinary-tree` runtime supplies native, browser-WASM, and WASI exports |
+| Package-selected JavaScript implementation | One exact `@vinary-tree/javascript-runtime` supplies native, browser-WASM, and WASI exports |
 | Whole-result convenience as the normal path | Iterate a query cursor or reduce bounded batches |
 | Implicit numeric identifiers | Use `bigint` for unsigned 64-bit identifiers |
 | GC as the visible resource boundary | Use `using` or explicit `close()` |
@@ -44,5 +44,5 @@ package contains no native binary, so switching the import spelling does not
 create a second runtime identity.
 
 During the RC, `liblevenshtein@latest` remains version `2.0.4`. Pin
-`liblevenshtein@4.0.0-rc.4` or use the `next` dist-tag when evaluating version
+`liblevenshtein@4.0.0-rc.5` or use the `next` dist-tag when evaluating version
 4.

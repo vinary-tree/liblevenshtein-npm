@@ -1,3 +1,5 @@
 node_modules/
+.ruff_cache/
+/target/
 *.tgz
 dist/

@@ -6,9 +6,11 @@ const packageJson = JSON.parse(await readFile(new URL("../package.json", import.
 const versionModel = JSON.parse(await readFile(new URL("../release/version.json", import.meta.url)));
 
 test("the unscoped RC delegates to one exact scoped facade", () => {
-  assert.equal(packageJson.name, "liblevenshtein");
-  assert.deepEqual(packageJson.dependencies, {
-    "@vinary-tree/liblevenshtein": "4.0.0-rc.4",
+  assert.deepEqual(versionModel.coordinates, { npmPackage: "liblevenshtein" });
+  assert.equal(packageJson.name, versionModel.coordinates.npmPackage);
+  assert.deepEqual(packageJson.dependencies, versionModel.dependencies);
+  assert.deepEqual(versionModel.dependencies, {
+    "@vinary-tree/liblevenshtein": "4.0.0-rc.5",
   });
   assert.equal(packageJson.publishConfig.tag, "next");
 });
