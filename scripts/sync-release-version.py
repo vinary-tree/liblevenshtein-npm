@@ -65,8 +65,14 @@ def validate(model: dict) -> list[str]:
     lock = load(ROOT / "package-lock.json")
     if model["canonical"] != model["npm"]:
         failures.append("canonical and npm versions differ")
-    if model.get("sourceTag") != f"v{model['canonical']}-release.1":
-        failures.append("corrective source tag must be the append-only release.1 ref")
+    source_tag = model.get("sourceTag", "")
+    canonical_tag = f"v{model['canonical']}"
+    if source_tag != canonical_tag and re.fullmatch(
+        rf"{re.escape(canonical_tag)}-release\.[1-9][0-9]*", source_tag
+    ) is None:
+        failures.append(
+            "source tag must be canonical or a positive append-only correction"
+        )
     if package["version"] != model["npm"] or lock["version"] != model["npm"]:
         failures.append("package or lock version is stale")
     if package["dependencies"] != model["dependencies"]:

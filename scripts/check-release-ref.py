@@ -13,40 +13,67 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRIES = frozenset({"validate-only", "npm"})
 
 
-def validate(ref: str, ref_name: str, registry: str, version: str) -> None:
+def validate(
+    ref: str,
+    ref_name: str,
+    registry: str,
+    version: str,
+    source_tag: str,
+) -> None:
     if registry not in REGISTRIES:
         raise ValueError(f"unknown release registry: {registry}")
     if ref != f"refs/tags/{ref_name}":
         raise ValueError("manual releases must target an immutable tag")
     canonical = f"v{version}"
-    if ref_name == canonical:
-        return
-    if re.fullmatch(rf"{re.escape(canonical)}-release\.[1-9][0-9]*", ref_name):
-        return
-    raise ValueError(
-        f"expected {canonical} or a positive numbered corrective release tag; "
-        f"got {ref_name}"
+    valid_source_tag = source_tag == canonical or re.fullmatch(
+        rf"{re.escape(canonical)}-release\.[1-9][0-9]*", source_tag
     )
+    if not valid_source_tag:
+        raise ValueError("release model contains an invalid source tag")
+    if ref_name != source_tag:
+        raise ValueError(f"expected configured source tag {source_tag}; got {ref_name}")
 
 
 def self_test(version: str) -> None:
     canonical = f"v{version}"
     for registry in REGISTRIES:
-        validate(f"refs/tags/{canonical}", canonical, registry, version)
+        validate(f"refs/tags/{canonical}", canonical, registry, version, canonical)
         validate(
             f"refs/tags/{canonical}-release.1",
             f"{canonical}-release.1",
             registry,
             version,
+            f"{canonical}-release.1",
         )
-    for ref, ref_name, registry in (
-        (f"refs/heads/{canonical}", canonical, "validate-only"),
-        (f"refs/tags/{canonical}-release.0", f"{canonical}-release.0", "npm"),
-        (f"refs/tags/{canonical}-release", f"{canonical}-release", "validate-only"),
-        (f"refs/tags/{canonical}-release.1", f"{canonical}-release.1", "unknown"),
+    for ref, ref_name, registry, source_tag in (
+        (f"refs/heads/{canonical}", canonical, "validate-only", canonical),
+        (
+            f"refs/tags/{canonical}-release.0",
+            f"{canonical}-release.0",
+            "npm",
+            f"{canonical}-release.0",
+        ),
+        (
+            f"refs/tags/{canonical}-release",
+            f"{canonical}-release",
+            "validate-only",
+            f"{canonical}-release",
+        ),
+        (
+            f"refs/tags/{canonical}-release.1",
+            f"{canonical}-release.1",
+            "unknown",
+            f"{canonical}-release.1",
+        ),
+        (
+            f"refs/tags/{canonical}-release.1",
+            f"{canonical}-release.1",
+            "npm",
+            canonical,
+        ),
     ):
         try:
-            validate(ref, ref_name, registry, version)
+            validate(ref, ref_name, registry, version, source_tag)
         except ValueError:
             continue
         raise AssertionError(f"accepted forbidden release dispatch: {ref_name}")
@@ -70,7 +97,13 @@ def main() -> int:
     ):
         parser.error("--ref, --ref-name, and --registry are required")
     try:
-        validate(args.ref, args.ref_name, args.registry, version)
+        validate(
+            args.ref,
+            args.ref_name,
+            args.registry,
+            version,
+            model["sourceTag"],
+        )
     except ValueError as error:
         parser.error(str(error))
     print(version)
