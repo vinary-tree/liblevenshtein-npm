@@ -25,7 +25,8 @@ resource-lifetime changes.
 
 The implementation is one level of delegation:
 
-`liblevenshtein` → `@vinary-tree/liblevenshtein` → `@vinary-tree/vinary-tree`.
+`liblevenshtein` → `@vinary-tree/liblevenshtein` →
+`@vinary-tree/javascript-runtime`.
 
 The unscoped package contains no native binary and no second runtime identity.
 Its ESM, CommonJS, TypeScript, ClojureScript, WASM, and WASI subpaths re-export

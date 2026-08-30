@@ -2,6 +2,9 @@
   "schemaVersion": 1,
   "component": "liblevenshtein-npm-compatibility",
   "canonical": "4.0.0-rc.5",
+  "coordinates": {
+    "npmPackage": "liblevenshtein"
+  },
   "npm": "4.0.0-rc.5",
   "distTag": "next",
   "sourceTag": "v4.0.0-rc.5",

@@ -63,6 +63,8 @@ def validate(model: dict) -> list[str]:
     failures: list[str] = []
     package = load(ROOT / "package.json")
     lock = load(ROOT / "package-lock.json")
+    if model.get("coordinates") != {"npmPackage": "liblevenshtein"}:
+        failures.append("canonical npm package coordinate is missing or stale")
     if model["canonical"] != model["npm"]:
         failures.append("canonical and npm versions differ")
     source_tag = model.get("sourceTag", "")
