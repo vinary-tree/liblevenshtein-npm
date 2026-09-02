@@ -1,12 +1,19 @@
 {
   "schemaVersion": 1,
   "component": "liblevenshtein-npm-compatibility",
-  "canonical": "4.0.0-rc.4",
-  "npm": "4.0.0-rc.4",
+  "canonical": "4.0.0-rc.6",
+  "metadata": {
+    "summary": "Fast Rust-powered spelling correction and fuzzy search for JavaScript",
+    "description": "The Rust-powered liblevenshtein JavaScript facade for fast spelling correction and fuzzy search across Node, WebAssembly, and WASI."
+  },
+  "coordinates": {
+    "npmPackage": "liblevenshtein"
+  },
+  "npm": "4.0.0-rc.6",
   "distTag": "next",
-  "sourceTag": "v4.0.0-rc.4-release.1",
+  "sourceTag": "v4.0.0-rc.6",
   "dependencies": {
-    "@vinary-tree/liblevenshtein": "4.0.0-rc.4"
+    "@vinary-tree/liblevenshtein": "4.0.0-rc.6"
   },
   "legacyLatest": {
     "version": "2.0.4",

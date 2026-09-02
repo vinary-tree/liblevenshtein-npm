@@ -1,7 +1,7 @@
 {
   "name": "liblevenshtein",
-  "version": "4.0.0-rc.4",
-  "description": "Compatibility package for the Rust-backed @vinary-tree/liblevenshtein bindings",
+  "version": "4.0.0-rc.6",
+  "description": "The Rust-powered liblevenshtein JavaScript facade for fast spelling correction and fuzzy search across Node, WebAssembly, and WASI.",
   "author": {
     "name": "Dylon Edwards",
     "email": "dylon.devo@gmail.com"
@@ -17,7 +17,7 @@
     "node": ">=22.14"
   },
   "dependencies": {
-    "@vinary-tree/liblevenshtein": "4.0.0-rc.4"
+    "@vinary-tree/liblevenshtein": "4.0.0-rc.6"
   },
   "types": "./index.d.ts",
   "main": "./index.cjs",

@@ -25,7 +25,7 @@ def dump(path: Path, value: dict) -> None:
 
 
 def rewrite_candidate_tokens(patterns: tuple[str, ...], canonical: str) -> None:
-    base, candidate = canonical.split("-rc.", 1)
+    base, _candidate = canonical.split("-rc.", 1)
     escaped = re.escape(base)
     for pattern in patterns:
         for target in ROOT.glob(pattern):
@@ -43,6 +43,7 @@ def write(model: dict) -> None:
     package_path = ROOT / "package.json"
     package = load(package_path)
     package["version"] = model["npm"]
+    package["description"] = model["metadata"]["description"]
     package["dependencies"] = model["dependencies"]
     package["publishConfig"]["tag"] = model["distTag"]
     dump(package_path, package)
@@ -65,10 +66,26 @@ def validate(model: dict) -> list[str]:
     lock = load(ROOT / "package-lock.json")
     if model["canonical"] != model["npm"]:
         failures.append("canonical and npm versions differ")
-    if model.get("sourceTag") != f"v{model['canonical']}-release.1":
-        failures.append("corrective source tag must be the append-only release.1 ref")
+    metadata = model.get("metadata", {})
+    summary = metadata.get("summary")
+    description = metadata.get("description")
+    if not isinstance(summary, str) or not 0 < len(summary) <= 80:
+        failures.append("canonical summary must contain 1 through 80 characters")
+    elif summary.endswith("."):
+        failures.append("canonical summary must not end with a period")
+    if not isinstance(description, str) or not description.endswith("."):
+        failures.append("canonical description must be non-empty and end with a period")
+    source_tag = model.get("sourceTag", "")
+    if not re.fullmatch(
+        rf"v{re.escape(model['canonical'])}(?:-release\.[1-9][0-9]*)?", source_tag
+    ):
+        failures.append("source tag must be the canonical or a positive corrective ref")
+    if model.get("coordinates", {}).get("npmPackage") != "liblevenshtein":
+        failures.append("npm coordinate must remain the user-owned liblevenshtein name")
     if package["version"] != model["npm"] or lock["version"] != model["npm"]:
         failures.append("package or lock version is stale")
+    if package.get("description") != description:
+        failures.append("package description differs from canonical metadata")
     if package["dependencies"] != model["dependencies"]:
         failures.append("scoped facade dependency is stale")
     if package.get("publishConfig", {}).get("tag") != "next":
